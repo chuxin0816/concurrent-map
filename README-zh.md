@@ -10,6 +10,7 @@
 * 使用Option模式对ShardCount，ShardingFunc进行配置
 * 将fnv1改为更受推荐和广泛使用的fnv1a
 * 设置默认ShardCount为128，这个值在BenchMark中读写性能都较好
+* New返回指针类型，更符合习惯
 
 ## 用法
 
@@ -23,7 +24,7 @@ import (
 ```
 
 ```bash
-go get "https://github.com/chuxin0816/concurrent-map"
+go get "github.com/chuxin0816/concurrent-map"
 ```
 
 现在包被导入到了`cmap`命名空间下
