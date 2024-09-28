@@ -125,6 +125,45 @@ func BenchmarkMultiInsertDifferent_1_Shard(b *testing.B) {
 	}
 }
 
+func BenchmarkMultiInsertDifferent_2_Shard(b *testing.B) {
+	m := New[string](WithShardCount[string](2))
+	finished := make(chan struct{}, b.N)
+	_, set := GetSet(m, finished)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		go set(strconv.Itoa(i), "value")
+	}
+	for i := 0; i < b.N; i++ {
+		<-finished
+	}
+}
+
+func BenchmarkMultiInsertDifferent_4_Shard(b *testing.B) {
+	m := New[string](WithShardCount[string](4))
+	finished := make(chan struct{}, b.N)
+	_, set := GetSet(m, finished)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		go set(strconv.Itoa(i), "value")
+	}
+	for i := 0; i < b.N; i++ {
+		<-finished
+	}
+}
+
+func BenchmarkMultiInsertDifferent_8_Shard(b *testing.B) {
+	m := New[string](WithShardCount[string](8))
+	finished := make(chan struct{}, b.N)
+	_, set := GetSet(m, finished)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		go set(strconv.Itoa(i), "value")
+	}
+	for i := 0; i < b.N; i++ {
+		<-finished
+	}
+}
+
 func BenchmarkMultiInsertDifferent_16_Shard(b *testing.B) {
 	m := New[string](WithShardCount[string](16))
 	finished := make(chan struct{}, b.N)
@@ -179,6 +218,32 @@ func BenchmarkMultiInsertDifferent_128_Shard(b *testing.B) {
 
 func BenchmarkMultiInsertDifferent_256_Shard(b *testing.B) {
 	m := New[string](WithShardCount[string](256))
+	finished := make(chan struct{}, b.N)
+	_, set := GetSet(m, finished)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		go set(strconv.Itoa(i), "value")
+	}
+	for i := 0; i < b.N; i++ {
+		<-finished
+	}
+}
+
+func BenchmarkMultiInsertDifferent_512_Shard(b *testing.B) {
+	m := New[string](WithShardCount[string](512))
+	finished := make(chan struct{}, b.N)
+	_, set := GetSet(m, finished)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		go set(strconv.Itoa(i), "value")
+	}
+	for i := 0; i < b.N; i++ {
+		<-finished
+	}
+}
+
+func BenchmarkMultiInsertDifferent_1024_Shard(b *testing.B) {
+	m := New[string](WithShardCount[string](1024))
 	finished := make(chan struct{}, b.N)
 	_, set := GetSet(m, finished)
 	b.ResetTimer()

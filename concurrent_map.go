@@ -24,6 +24,13 @@ type ConcurrentMapShared[V any] struct {
 type Option[V any] func(*ConcurrentMap[V])
 
 func WithShardCount[V any](shardCount int) Option[V] {
+	if shardCount <= 0 {
+		panic("shardCount must be greater than 0")
+	}
+	if shardCount&(shardCount-1) != 0 {
+		panic("shardCount must be a power of 2")
+	}
+
 	return func(cm *ConcurrentMap[V]) {
 		cm.shardCount = shardCount
 		cm.shards = make([]*ConcurrentMapShared[V], shardCount)
