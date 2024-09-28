@@ -1,8 +1,14 @@
-# concurrent map [![Build Status](https://travis-ci.com/orcaman/concurrent-map.svg?branch=master)](https://travis-ci.com/orcaman/concurrent-map)
+# concurrent map 
 
 As explained [here](http://golang.org/doc/faq#atomic_maps) and [here](http://blog.golang.org/go-maps-in-action), the `map` type in Go doesn't support concurrent reads and writes. `concurrent-map` provides a high-performance solution to this by sharding the map with minimal time spent waiting for locks.
 
 Prior to Go 1.9, there was no concurrent map implementation in the stdlib. In Go 1.9, `sync.Map` was introduced. The new `sync.Map` has a few key differences from this map. The stdlib `sync.Map` is designed for append-only scenarios. So if you want to use the map for something more like in-memory db, you might benefit from using our version. You can read more about it in the golang repo, for example [here](https://github.com/golang/go/issues/21035) and [here](https://stackoverflow.com/questions/11063473/map-with-concurrent-access)
+
+## Improvements
+* Fix the key type to string to reduce complexity.
+* Use the Option pattern to configure ShardCount and ShardingFunc.
+* Change from FNV-1 to the more recommended and widely used FNV-1a.
+* Set the default ShardCount to 128, as this value performs well in both read and write benchmarks.
 
 ## usage
 
@@ -10,13 +16,13 @@ Import the package:
 
 ```go
 import (
-	"github.com/orcaman/concurrent-map/v2"
+	"https://github.com/chuxin0816/concurrent-map"
 )
 
 ```
 
 ```bash
-go get "github.com/orcaman/concurrent-map/v2"
+go get "https://github.com/chuxin0816/concurrent-map"
 ```
 
 The package is now imported under the "cmap" namespace.
@@ -26,7 +32,7 @@ The package is now imported under the "cmap" namespace.
 ```go
 
 	// Create a new map.
-	m := cmap.New[string]()
+	m := cmap.New[string](cmap.WithShardCount[string](128))
 
 	// Sets item within map, sets "bar" under key "foo"
 	m.Set("foo", "bar")
@@ -44,7 +50,7 @@ For more examples have a look at concurrent_map_test.go.
 Running tests:
 
 ```bash
-go test "github.com/orcaman/concurrent-map/v2"
+go test "https://github.com/chuxin0816/concurrent-map"
 ```
 
 ## guidelines for contributing

@@ -1,9 +1,15 @@
-# concurrent map [![Build Status](https://travis-ci.com/orcaman/concurrent-map.svg?branch=master)](https://travis-ci.com/orcaman/concurrent-map)
+# concurrent map 
 
 正如 [这里](http://golang.org/doc/faq#atomic_maps) 和 [这里](http://blog.golang.org/go-maps-in-action)所描述的, Go语言原生的`map`类型并不支持并发读写。`concurrent-map`提供了一种高性能的解决方案:通过对内部`map`进行分片，降低锁粒度，从而达到最少的锁等待时间(锁冲突)
 
 在Go 1.9之前，go语言标准库中并没有实现并发`map`。在Go 1.9中，引入了`sync.Map`。新的`sync.Map`与此`concurrent-map`有几个关键区别。标准库中的`sync.Map`是专为`append-only`场景设计的。因此，如果您想将`Map`用于一个类似内存数据库，那么使用我们的版本可能会受益。你可以在golang repo上读到更多，[这里](https://github.com/golang/go/issues/21035) and [这里](https://stackoverflow.com/questions/11063473/map-with-concurrent-access)
 ***译注:`sync.Map`在读多写少性能比较好，否则并发性能很差***
+
+## 改进
+* 固定key类型为string，减少复杂度
+* 使用Option模式对ShardCount，ShardingFunc进行配置
+* 将fnv1改为更受推荐和广泛使用的fnv1a
+* 设置默认ShardCount为128，这个值在BenchMark中读写性能都较好
 
 ## 用法
 
@@ -11,13 +17,13 @@
 
 ```go
 import (
-	"github.com/orcaman/concurrent-map/v2"
+	"https://github.com/chuxin0816/concurrent-map"
 )
 
 ```
 
 ```bash
-go get "github.com/orcaman/concurrent-map/v2"
+go get "https://github.com/chuxin0816/concurrent-map"
 ```
 
 现在包被导入到了`cmap`命名空间下
@@ -28,7 +34,7 @@ go get "github.com/orcaman/concurrent-map/v2"
 ```go
 
 	// 创建一个新的 map.
-	m := cmap.New[string]()
+	m := cmap.New[string](cmap.WithShardCount[string](128))
 
 	// 设置变量m一个键为“foo”值为“bar”键值对
 	m.Set("foo", "bar")
@@ -46,7 +52,7 @@ go get "github.com/orcaman/concurrent-map/v2"
 运行测试:
 
 ```bash
-go test "github.com/orcaman/concurrent-map/v2"
+go test "https://github.com/chuxin0816/concurrent-map"
 ```
 
 ## 贡献说明
