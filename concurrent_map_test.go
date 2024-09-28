@@ -23,6 +23,17 @@ func TestMapCreation(t *testing.T) {
 	}
 }
 
+func TestMapCreationWithOption(t *testing.T) {
+	m := New[string](WithShardCount[string](4))
+	if m.shards == nil {
+		t.Error("map is null.")
+	}
+
+	if m.Count() != 0 {
+		t.Error("new map should be empty.")
+	}
+}
+
 func TestInsert(t *testing.T) {
 	m := New[Animal]()
 	elephant := Animal{"elephant"}
@@ -419,10 +430,6 @@ func TestConcurrent(t *testing.T) {
 }
 
 func TestJsonMarshal(t *testing.T) {
-	SHARD_COUNT = 2
-	defer func() {
-		SHARD_COUNT = 32
-	}()
 	expected := "{\"a\":1,\"b\":2}"
 	m := New[int]()
 	m.Set("a", 1)
@@ -471,12 +478,11 @@ func TestFnv32(t *testing.T) {
 	hasher := fnv.New32()
 	_, err := hasher.Write(key)
 	if err != nil {
-		t.Errorf(err.Error())
+		t.Errorf("Error writing to hasher: %s", err)
 	}
 	if fnv32(string(key)) != hasher.Sum32() {
 		t.Errorf("Bundled fnv32 produced %d, expected result from hash/fnv32 is %d", fnv32(string(key)), hasher.Sum32())
 	}
-
 }
 
 func TestUpsert(t *testing.T) {
@@ -526,9 +532,9 @@ func TestKeysWhenRemoving(t *testing.T) {
 	// Remove 10 elements concurrently.
 	Num := 10
 	for i := 0; i < Num; i++ {
-		go func(c *ConcurrentMap[string, Animal], n int) {
+		go func(c *ConcurrentMap[Animal], n int) {
 			c.Remove(strconv.Itoa(n))
-		}(&m, i)
+		}(m, i)
 	}
 	keys := m.Keys()
 	for _, k := range keys {
