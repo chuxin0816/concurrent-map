@@ -322,6 +322,35 @@ func TestBufferedIterator(t *testing.T) {
 	}
 }
 
+func TestPopAll(t *testing.T) {
+	m := New[Animal]()
+
+	// Insert 100 elements.
+	for i := 0; i < 100; i++ {
+		m.Set(strconv.Itoa(i), Animal{strconv.Itoa(i)})
+	}
+
+	ch := m.PopAll()
+	if !m.IsEmpty() {
+		t.Error("Map should be empty after PopAll")
+	}
+
+	counter := 0
+	// Iterate over elements.
+	for item := range ch {
+		val := item.Val
+
+		if (val == Animal{}) {
+			t.Error("Expecting an object.")
+		}
+		counter++
+	}
+
+	if counter != 100 {
+		t.Error("We should have counted 100 elements.")
+	}
+}
+
 func TestClear(t *testing.T) {
 	m := New[Animal]()
 

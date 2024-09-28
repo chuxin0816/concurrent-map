@@ -11,6 +11,7 @@
 * 将fnv1改为更受推荐和广泛使用的fnv1a
 * 设置默认ShardCount为128，这个值在BenchMark中读写性能都较好
 * New返回指针类型，更符合习惯
+* 添加PopAll方法，返回所有键值对，并清空map
 
 ## 用法
 

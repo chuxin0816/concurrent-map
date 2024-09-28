@@ -220,6 +220,17 @@ func (m ConcurrentMap[V]) IterBuffered() <-chan Tuple[V] {
 	return ch
 }
 
+func (m ConcurrentMap[V]) PopAll() <-chan Tuple[V] {
+	chans := popAll(m)
+	total := 0
+	for _, c := range chans {
+		total += cap(c)
+	}
+	ch := make(chan Tuple[V], total)
+	go fanIn(chans, ch)
+	return ch
+}
+
 // Clear removes all items from map.
 func (m ConcurrentMap[V]) Clear() {
 	for item := range m.IterBuffered() {
@@ -251,6 +262,35 @@ func snapshot[V any](m ConcurrentMap[V]) (chans []chan Tuple[V]) {
 			}
 			shard.RUnlock()
 			close(chans[index])
+		}(index, shard)
+	}
+	wg.Wait()
+	return chans
+}
+
+// Returns a array of channels that contains elements in each shard and clears the map.
+// 
+func popAll[V any](m ConcurrentMap[V]) (chans []chan Tuple[V]) {
+	// When you access map items before initializing.
+	if len(m.shards) == 0 {
+		panic(`cmap.ConcurrentMap is not initialized. Should run New() before usage.`)
+	}
+	chans = make([]chan Tuple[V], m.shardCount)
+	wg := sync.WaitGroup{}
+	wg.Add(m.shardCount)
+	// Foreach shard.
+	for index, shard := range m.shards {
+		go func(index int, shard *ConcurrentMapShared[V]) {
+			// Foreach key, value pair.
+			shard.Lock()
+			chans[index] = make(chan Tuple[V], len(shard.items))
+			wg.Done()
+			for key, val := range shard.items {
+				chans[index] <- Tuple[V]{key, val}
+			}
+			close(chans[index])
+			shard.items = make(map[string]V)
+			shard.Unlock()
 		}(index, shard)
 	}
 	wg.Wait()
