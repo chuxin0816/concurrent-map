@@ -40,7 +40,7 @@ func WithShardingFunction[V any](sharding func(key string) uint32) Option[V] {
 func New[V any](opts ...Option[V]) *ConcurrentMap[V] {
 	m := &ConcurrentMap[V]{
 		shardCount: SHARD_COUNT,
-		sharding:   fnv32,
+		sharding:   fnv32a,
 		shards:     make([]*ConcurrentMapShared[V], SHARD_COUNT),
 	}
 	for _, opt := range opts {
@@ -340,13 +340,13 @@ func (m ConcurrentMap[V]) MarshalJSON() ([]byte, error) {
 	return json.Marshal(tmp)
 }
 
-func fnv32(key string) uint32 {
+func fnv32a(key string) uint32 {
 	hash := uint32(2166136261)
 	const prime32 = uint32(16777619)
 	keyLength := len(key)
 	for i := 0; i < keyLength; i++ {
-		hash *= prime32
 		hash ^= uint32(key[i])
+		hash *= prime32
 	}
 
 	return hash

@@ -472,16 +472,16 @@ func TestMInsert(t *testing.T) {
 	}
 }
 
-func TestFnv32(t *testing.T) {
+func TestFnv32a(t *testing.T) {
 	key := []byte("ABC")
 
-	hasher := fnv.New32()
+	hasher := fnv.New32a()
 	_, err := hasher.Write(key)
 	if err != nil {
 		t.Errorf("Error writing to hasher: %s", err)
 	}
-	if fnv32(string(key)) != hasher.Sum32() {
-		t.Errorf("Bundled fnv32 produced %d, expected result from hash/fnv32 is %d", fnv32(string(key)), hasher.Sum32())
+	if fnv32a(string(key)) != hasher.Sum32() {
+		t.Errorf("Bundled fnv32 produced %d, expected result from hash/fnv32 is %d", fnv32a(string(key)), hasher.Sum32())
 	}
 }
 
