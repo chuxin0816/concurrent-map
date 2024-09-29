@@ -12,7 +12,7 @@ const SHARD_COUNT = 128
 type ConcurrentMap[V any] struct {
 	shardCount int
 	shards     []*ConcurrentMapShared[V]
-	sharding   func(key string) uint32
+	sharding   func(key string) uint64
 }
 
 // A "thread" safe string to anything map.
@@ -37,7 +37,7 @@ func WithShardCount[V any](shardCount int) Option[V] {
 	}
 }
 
-func WithShardingFunction[V any](sharding func(key string) uint32) Option[V] {
+func WithShardingFunction[V any](sharding func(key string) uint64) Option[V] {
 	return func(cm *ConcurrentMap[V]) {
 		cm.sharding = sharding
 	}
@@ -47,7 +47,7 @@ func WithShardingFunction[V any](sharding func(key string) uint32) Option[V] {
 func New[V any](opts ...Option[V]) *ConcurrentMap[V] {
 	m := &ConcurrentMap[V]{
 		shardCount: SHARD_COUNT,
-		sharding:   fnv32a,
+		sharding:   fnv64a,
 		shards:     make([]*ConcurrentMapShared[V], SHARD_COUNT),
 	}
 	for _, opt := range opts {
@@ -269,7 +269,6 @@ func snapshot[V any](m ConcurrentMap[V]) (chans []chan Tuple[V]) {
 }
 
 // Returns a array of channels that contains elements in each shard and clears the map.
-// 
 func popAll[V any](m ConcurrentMap[V]) (chans []chan Tuple[V]) {
 	// When you access map items before initializing.
 	if len(m.shards) == 0 {
@@ -387,13 +386,12 @@ func (m ConcurrentMap[V]) MarshalJSON() ([]byte, error) {
 	return json.Marshal(tmp)
 }
 
-func fnv32a(key string) uint32 {
-	hash := uint32(2166136261)
-	const prime32 = uint32(16777619)
-	keyLength := len(key)
-	for i := 0; i < keyLength; i++ {
-		hash ^= uint32(key[i])
-		hash *= prime32
+func fnv64a(key string) uint64 {
+	var hash uint64 = 14695981039346656037
+	const prime64 = 1099511628211
+	for i := 0; i < len(key); i++ {
+		hash ^= uint64(key[i])
+		hash *= prime64
 	}
 
 	return hash

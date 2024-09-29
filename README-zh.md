@@ -12,6 +12,7 @@
 * 设置默认ShardCount为128，这个值在BenchMark中读写性能都较好
 * New返回指针类型，更符合习惯
 * 添加PopAll方法，返回所有键值对，并清空map
+* 使用fnv64a作为hash函数
 
 ## 用法
 

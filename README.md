@@ -11,6 +11,7 @@ Prior to Go 1.9, there was no concurrent map implementation in the stdlib. In Go
 * Set the default ShardCount to 128, as this value performs well in both read and write benchmarks.
 * New returns a pointer type, which is more customary
 * Add a PopAll method that returns all key-value pairs and cleans the map
+* Use fnv64a as the hash function
 
 ## usage
 
