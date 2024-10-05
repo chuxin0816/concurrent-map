@@ -50,7 +50,7 @@ For more examples have a look at concurrent_map_test.go.
 Running tests:
 
 ```bash
-go test "https://github.com/chuxin0816/concurrent-map"
+go test "github.com/chuxin0816/concurrent-map"
 ```
 
 ## guidelines for contributing
