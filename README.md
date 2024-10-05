@@ -19,7 +19,7 @@ Import the package:
 
 ```go
 import (
-	"https://github.com/chuxin0816/concurrent-map"
+	"github.com/chuxin0816/concurrent-map"
 )
 
 ```
