@@ -18,10 +18,7 @@ Prior to Go 1.9, there was no concurrent map implementation in the stdlib. In Go
 Import the package:
 
 ```go
-import (
-	"github.com/chuxin0816/concurrent-map"
-)
-
+import "github.com/chuxin0816/concurrent-map"
 ```
 
 ```bash
